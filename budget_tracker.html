@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .amount-input {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:active {llegal string was spe
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .quick-amounts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .quick-btn {
+            padding: 10px;
+            background: #f8f9fa;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-btn:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Budget Tracker</h1>
+            <p>Quick expense entry</p>
+        </div>
+        
+        <form id="expenseForm">
+            <div class="form-group">
+                <label for="amount">Amount (CHF)</label>
+                <div class="quick-amounts">
+                    <button type="button" class="quick-btn" onclick="setAmount(5)">5.-</button>
+                    <button type="button" class="quick-btn" onclick="setAmount(10)">10.-</button>
+                    <button type="button" class="quick-btn" onclick="setAmount(20)">20.-</button>
+                    <button type="button" class="quick-btn" onclick="setAmount(50)">50.-</button>
+                    <button type="button" class="quick-btn" onclick="setAmount(100)">100.-</button>
+                    <button type="button" class="quick-btn" onclick="setAmount(200)">200.-</button>
+                </div>
+                <input type="number" id="amount" step="0.01" min="0" placeholder="0.00" class="amount-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" id="description" placeholder="Store or item" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" required>
+                    <option value="">Select category</option>
+                    <option value="Food">Food</option>
+                    <option value="Health/medical">Health/medical</option>
+                    <option value="Home">Home</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Gifts">Gifts</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+        <!--<div class="form-group">
+                <label for="person">Who spent it?</label>
+                <select id="person" required>
+                    <option value="">Select person</option>
+                    <option value="Me">Me</option>
+                    <option value="Wife">Wife</option>
+                </select>
+            </div>-->
+            
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" required>
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn">
+                💾 Add Expense
+            </button>
+            
+            <div class="status" id="status"></div>
+        </form>
+    </div>
+
+    <script>
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
+        
+        function setAmount(value) {
+            document.getElementById('amount').value = value.toFixed(2);
+        }
+        
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+        
+        function formatDate(date) {
+            const d = new Date(date);
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+        
+        function clearForm() {
+            document.getElementById('expenseForm').reset();
+            document.getElementById('date').valueAsDate = new Date();
+        }
+        
+        document.getElementById('expenseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Adding...';
+            
+            const formData = {
+                date: formatDate(document.getElementById('date').value),
+                amount: `${parseFloat(document.getElementById('amount').value).toFixed(2)}`,
+                description: document.getElementById('description').value,
+                category: document.getElementById('category').value,
+            };
+            
+            try {
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbw6L7l0RFi_Iv4FoR_jDFAJ0bGmD6jmx2A33ASBRiiEjQnKZdSfv3XyhNblkowcNWgq7A/exec';
+                
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                showStatus('✅ Expense added successfully!', 'success');
+                clearForm();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('❌ Error adding expense. Please try again.', 'error');
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = '💾 Add Expense';
+        });
+    </script>
+</body>
+</html>
