@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e1e5e9;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .amount-input {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .quick-amounts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quick-btn {
+            padding: 10px;
+            background: #f8f9fa;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .file-input {
+            margin-bottom: 20px;
+        }
+
+        .file-input input[type="file"] {
+            padding: 10px;
+            background: white;
+        }
+
+        .json-textarea {
+            height: 200px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .example-box h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .example-box pre {
+            background: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e1e5e9;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .upload-stats {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Budget Tracker</h1>
+            <p>Quick expense entry & bulk upload</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('single')">Single Entry</button>
+            <button class="tab" onclick="switchTab('bulk')">Bulk Upload</button>
+        </div>
+
+        <!-- Single Entry Tab -->
+        <div id="single-tab" class="tab-content active">
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label for="amount">Amount (CHF)</label>
+                    <div class="quick-amounts">
+                        <button type="button" class="quick-btn" onclick="setAmount(5)">5.-</button>
+                        <button type="button" class="quick-btn" onclick="setAmount(10)">10.-</button>
+                        <button type="button" class="quick-btn" onclick="setAmount(20)">20.-</button>
+                        <button type="button" class="quick-btn" onclick="setAmount(50)">50.-</button>
+                        <button type="button" class="quick-btn" onclick="setAmount(100)">100.-</button>
+                        <button type="button" class="quick-btn" onclick="setAmount(200)">200.-</button>
+                    </div>
+                    <input type="number" id="amount" step="0.01" min="0" placeholder="0.00" class="amount-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" id="description" placeholder="Store or item" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" required>
+                        <option value="">Select category</option>
+                        <option value="Food">Food</option>
+                        <option value="Health/medical">Health/medical</option>
+                        <option value="Home">Home</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Gifts">Gifts</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    💾 Add Expense
+                </button>
+
+                <div class="status" id="status"></div>
+            </form>
+        </div>
+
+        <!-- Bulk Upload Tab -->
+        <div id="bulk-tab" class="tab-content">
+            <div class="example-box">
+                <h4>📋 JSON Format Example</h4>
+                <pre>[
+  {
+    "date": "15.07.2025",
+    "amount": "25.50",
+    "description": "Lunch at restaurant",
+    "category": "Food"
+  },
+  {
+    "date": "16.07.2025",
+    "amount": "120.00",
+    "description": "Gas station",
+    "category": "Transportation"
+  }
+]</pre>
+            </div>
+
+            <div class="form-group file-input">
+                <label for="jsonFile">Upload JSON file</label>
+                <input type="file" id="jsonFile" accept=".json" onchange="handleFileUpload(event)">
+                <button type="button" class="btn btn-secondary" onclick="generateTemplate()">📄 Download Template</button>
+            </div>
+
+            <div class="form-group">
+                <label for="jsonInput">Or paste JSON directly</label>
+                <textarea id="jsonInput" class="json-textarea" placeholder="Paste your JSON array here..."></textarea>
+            </div>
+
+            <button type="button" class="btn" id="bulkSubmitBtn" onclick="processBulkUpload()">
+                📤 Upload Expenses
+            </button>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="upload-stats" id="uploadStats"></div>
+
+            <div class="status" id="bulkStatus"></div>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabButtons = document.querySelectorAll('.tab');
+            tabButtons.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab and mark button as active
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function setAmount(value) {
+            document.getElementById('amount').value = value.toFixed(2);
+        }
+
+        function showStatus(message, type, statusId = 'status') {
+            const status = document.getElementById(statusId);
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 5000);
+        }
+
+        function formatDate(date) {
+            const d = new Date(date);
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+        function clearForm() {
+            document.getElementById('expenseForm').reset();
+            document.getElementById('date').valueAsDate = new Date();
+        }
+
+        function generateTemplate() {
+            const template = [
+                {
+                    "date": "15.07.2025",
+                    "amount": "25.50",
+                    "description": "Lunch at restaurant",
+                    "category": "Food"
+                },
+                {
+                    "date": "16.07.2025",
+                    "amount": "120.00",
+                    "description": "Gas station",
+                    "category": "Transportation"
+                }
+            ];
+
+            const blob = new Blob([JSON.stringify(template, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'budget_template.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('jsonInput').value = e.target.result;
+            };
+            reader.readAsText(file);
+        }
+
+        function validateExpenseData(expenses) {
+            const validCategories = ['Food', 'Health/medical', 'Home', 'Transportation', 'Utilities', 'Personal', 'Travel', 'Gifts', 'Other'];
+            const errors = [];
+
+            if (!Array.isArray(expenses)) {
+                return ['Data must be an array of expense objects'];
+            }
+
+            expenses.forEach((expense, index) => {
+                if (!expense.date || !expense.amount || !expense.description || !expense.category) {
+                    errors.push(`Entry ${index + 1}: Missing required fields (date, amount, description, category)`);
+                }
+
+                if (expense.amount && (isNaN(parseFloat(expense.amount)) || parseFloat(expense.amount) <= 0)) {
+                    errors.push(`Entry ${index + 1}: Invalid amount`);
+                }
+
+                if (expense.category && !validCategories.includes(expense.category)) {
+                    errors.push(`Entry ${index + 1}: Invalid category. Must be one of: ${validCategories.join(', ')}`);
+                }
+
+                // Validate date format (DD.MM.YYYY)
+                if (expense.date && !/^\d{2}\.\d{2}\.\d{4}$/.test(expense.date)) {
+                    errors.push(`Entry ${index + 1}: Invalid date format. Use DD.MM.YYYY`);
+                }
+            });
+
+            return errors;
+        }
+
+        async function processBulkUpload() {
+            const jsonInput = document.getElementById('jsonInput').value.trim();
+            const submitBtn = document.getElementById('bulkSubmitBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const uploadStats = document.getElementById('uploadStats');
+
+            if (!jsonInput) {
+                showStatus('❌ Please provide JSON data', 'error', 'bulkStatus');
+                return;
+            }
+
+            let expenses;
+            try {
+                expenses = JSON.parse(jsonInput);
+            } catch (error) {
+                showStatus('❌ Invalid JSON format', 'error', 'bulkStatus');
+                return;
+            }
+
+            const validationErrors = validateExpenseData(expenses);
+            if (validationErrors.length > 0) {
+                showStatus('❌ Validation errors: ' + validationErrors.join('; '), 'error', 'bulkStatus');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+            progressBar.style.display = 'block';
+            uploadStats.style.display = 'block';
+
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbw6L7l0RFi_Iv4FoR_jDFAJ0bGmD6jmx2A33ASBRiiEjQnKZdSfv3XyhNblkowcNWgq7A/exec';
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (let i = 0; i < expenses.length; i++) {
+                const expense = expenses[i];
+                const progress = ((i + 1) / expenses.length) * 100;
+                progressFill.style.width = progress + '%';
+                uploadStats.textContent = `Processing ${i + 1} of ${expenses.length}...`;
+
+                try {
+                    const formData = {
+                        date: expense.date,
+                        amount: parseFloat(expense.amount).toFixed(2),
+                        description: expense.description,
+                        category: expense.category
+                    };
+
+                    await fetch(scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    successCount++;
+                    // Small delay to avoid overwhelming the server
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                } catch (error) {
+                    console.error('Error processing expense:', error);
+                    errorCount++;
+                }
+            }
+
+            progressBar.style.display = 'none';
+            uploadStats.textContent = `✅ ${successCount} successful, ${errorCount} failed`;
+
+            if (errorCount === 0) {
+                showStatus(`✅ All ${successCount} expenses uploaded successfully!`, 'success', 'bulkStatus');
+                document.getElementById('jsonInput').value = '';
+                document.getElementById('jsonFile').value = '';
+            } else {
+                showStatus(`⚠️ ${successCount} uploaded, ${errorCount} failed. Check console for details.`, 'error', 'bulkStatus');
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = '📤 Upload Expenses';
+        }
+
+        // Single entry form submission
+        document.getElementById('expenseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Adding...';
+
+            const formData = {
+                date: formatDate(document.getElementById('date').value),
+                amount: `${parseFloat(document.getElementById('amount').value).toFixed(2)}`,
+                description: document.getElementById('description').value,
+                category: document.getElementById('category').value,
+            };
+
+            try {
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbw6L7l0RFi_Iv4FoR_jDFAJ0bGmD6jmx2A33ASBRiiEjQnKZdSfv3XyhNblkowcNWgq7A/exec';
+
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                showStatus('✅ Expense added successfully!', 'success');
+                clearForm();
+
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('❌ Error adding expense. Please try again.', 'error');
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = '💾 Add Expense';
+        });
+    </script>
+</body>
+</html>
